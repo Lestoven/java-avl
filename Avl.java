@@ -39,7 +39,13 @@ public class Avl {
 
     private static <T extends Comparable<? super T>> Node<T> rightSubTreeGrown(Node<T> t, BooleanWrapper d) {
         if(t.getBalance() == 1) {
-
+            Node<T> r = t.getRight();
+            if(1 == r.getBalance()) {
+                t = balancePPp(t, r);
+            } else {
+                t = balancePPm(t, r);
+            }
+            d.value = false;
         } else {
             t.setBalance((short)(t.getBalance() + 1));
             d.value = t.getBalance() > 0;
@@ -62,24 +68,37 @@ public class Avl {
         r.setLeft(l);
         r.setRight(t);
         int balanceLeft = -(int)((r.getBalance() + 1)/2);
-        int balanceRight = -(int)((1 - r.getBalance())/2);
+        int balanceRight = (int)((1 - r.getBalance())/2);
         l.setBalance((short)balanceLeft);
         r.setBalance((short)balanceRight);
         r.setBalance((short)0);
         return r;
     }
 
+    private static <T extends Comparable<? super T>> Node<T> balancePPp(Node<T> t, Node<T> r) {
+        t.setRight(r.getLeft());
+        r.setLeft(t);
+        t.setBalance((short)0);
+        r.setBalance((short)0);
+        return r;
+    }
+
+    private static <T extends Comparable<? super T>> Node<T> balancePPm(Node<T> t, Node<T> r) {
+        Node<T> l = r.getLeft();
+        t.setRight(l.getLeft());
+        r.setLeft(l.getRight());
+        l.setLeft(t);
+        int balanceLeft = -(int)((l.getBalance() + 1)/2);
+        int balanceRight = (int)((1 - l.getBalance())/2);;
+        t.setBalance((short)balanceLeft);
+        l.setBalance((short)balanceRight);
+        l.setBalance((short)0);
+        return l;
+    }
+
+    /*
     public static void printTree(Node<?> node, String indent, boolean last) {
         if (node != null) {
-            System.out.print(indent);
-            if (last) {
-                indent += "   ";
-            } else {
-                indent += "|  ";
-            }
-            System.out.println(node.getKey());
-            printTree(node.getLeft(), indent, false);
-            printTree(node.getRight(), indent, true);
-        }
-    }
+           
+    }*/
 }
