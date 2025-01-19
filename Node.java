@@ -1,51 +1,53 @@
+import java.util.Optional;
+
 public class Node<T extends Comparable<? super T>> implements Cloneable {
     private T key;
-    private short balance;
-    private Node<T> left, right;
+    private byte balance;
+    private Optional<Node<T>> left, right; // empty Node represents a child of a leaf
 
-    public Node() {
-        key = null;
-        balance = 0;
-        left = right = null; 
-    }
-
-    public Node(T x) {
+    protected Node(T x) {
         key = x; 
         balance = 0;
-        left = right = null; 
+        left = right = Optional.empty(); 
+    }
+
+    // copy constructor
+    protected Node(Optional<Node<T>> node) {
+        if (node.isEmpty()) throw new IllegalArgumentException("Cannot copy an empty node");
+        Node<T> originalNode = node.get();
+
+        this.key = originalNode.key;
+        this.balance = originalNode.balance;
+        this.left = (originalNode.left.isEmpty()) ? Optional.of(new Node<>(originalNode.left)) : Optional.empty();
+        this.right = (originalNode.right.isEmpty()) ?  Optional.of(new Node<T>(originalNode.right)) : Optional.empty();
     }
 
     public T getKey() {
-        if(null == key)
-            throw new IllegalStateException("Key is undefiened.");
+        if(null == key) throw new IllegalStateException("Key is undefiened.");
         return key;
     }
+    protected void setKey(T newKey) { this.key = newKey; }
 
-    public void setKey(T newKey) {
-        this.key = newKey;
-    }
-
-    public short getBalance() {
-        return balance;
-    }
-
-    public void setBalance(short newBalance) {
-        if(newBalance < -1 || newBalance > 1)
+    public byte getBalance() { return balance; }
+    protected void rightSubTreeGrown() { 
+        if(0 != balance)
             throw new IllegalStateException("Valid values for balance: -1 or 0 or 1.");
-        this.balance = newBalance;
+        this.balance++; 
+    }
+    protected void leftSubTreeGrown() { 
+        if(0 != balance)
+            throw new IllegalStateException("Valid values for balance: -1 or 0 or 1.");
+        this.balance--; 
     }
 
-    public Node<T> getLeft() { return left; }
-    public void setLeft(Node<T> newLeft) { left = newLeft; }
-    public Node<T> getRight() { return right; }
-    public void setRight(Node<T> newRight) { right = newRight; }
+    public Optional<Node<T>> getLeftChild() { return left; }
+    protected void setLeft(Optional<Node<T>> newLeft) { left = newLeft; }
+
+    public Optional<Node<T>> getRightChild() { return right; }
+    protected void setRight(Optional<Node<T>> newRight) { right = newRight; }
 
 
-    @Override
-    public String toString() {
-        return "Node key: %s, balance: %d".formatted(key != null ? key.toString() : "null", balance);
-    }
-
+    /*
     @SuppressWarnings("unchecked")
     @Override
     public Node<T> clone() {
@@ -57,5 +59,10 @@ public class Node<T extends Comparable<? super T>> implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError("Cloning not supported", e);
         }
+    }*/
+    
+    @Override
+    public String toString() {
+        return "Node key: %s, balance: %d".formatted(key != null ? key.toString() : "null", balance);
     }
 }

@@ -1,4 +1,4 @@
-public class Avl {
+/*public class Avl {
     public static <T extends Comparable<? super T>> Node<T> avlInsert(Node<T> t, T newKey, BooleanWrapper d) {
         if(null == t) {
             t = new Node<T>(newKey);
@@ -31,7 +31,7 @@ public class Avl {
             }
             d.value = false;
         } else {
-            t.setBalance((short)(t.getBalance() - 1));
+            t.setBalance((byte)(t.getBalance() - 1));
             d.value = t.getBalance() < 0;
         }
         return t;
@@ -47,7 +47,7 @@ public class Avl {
             }
             d.value = false;
         } else {
-            t.setBalance((short)(t.getBalance() + 1));
+            t.setBalance((byte)(t.getBalance() + 1));
             d.value = t.getBalance() > 0;
         }
         return t;
@@ -56,8 +56,8 @@ public class Avl {
     private static <T extends Comparable<? super T>> Node<T> balanceMMm(Node<T> t, Node<T> l) {
         t.setLeft(l.getRight());
         l.setRight(t);
-        t.setBalance((short)0);
-        l.setBalance((short)0);
+        t.setBalance((byte)0);
+        l.setBalance((byte)0);
         return l;
     }
 
@@ -69,17 +69,17 @@ public class Avl {
         r.setRight(t);
         int balanceLeft = -(int)((r.getBalance() + 1)/2);
         int balanceRight = (int)((1 - r.getBalance())/2);
-        l.setBalance((short)balanceLeft);
-        r.setBalance((short)balanceRight);
-        r.setBalance((short)0);
+        l.setBalance((byte)balanceLeft);
+        r.setBalance((byte)balanceRight);
+        r.setBalance((byte)0);
         return r;
     }
 
     private static <T extends Comparable<? super T>> Node<T> balancePPp(Node<T> t, Node<T> r) {
         t.setRight(r.getLeft());
         r.setLeft(t);
-        t.setBalance((short)0);
-        r.setBalance((short)0);
+        t.setBalance((byte)0);
+        r.setBalance((byte)0);
         return r;
     }
 
@@ -90,15 +90,10 @@ public class Avl {
         l.setLeft(t);
         int balanceLeft = -(int)((l.getBalance() + 1)/2);
         int balanceRight = (int)((1 - l.getBalance())/2);;
-        t.setBalance((short)balanceLeft);
-        l.setBalance((short)balanceRight);
-        l.setBalance((short)0);
+        t.setBalance((byte)balanceLeft);
+        l.setBalance((byte)balanceRight);
+        l.setBalance((byte)0);
         return l;
     }
 
-    /*
-    public static void printTree(Node<?> node, String indent, boolean last) {
-        if (node != null) {
-           
-    }*/
-}
+}*/
