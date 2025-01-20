@@ -13,7 +13,7 @@ public class Node<T extends Comparable<? super T>> implements Cloneable {
 
     // copy constructor
     protected Node(Optional<Node<T>> node) {
-        if (!node.isPresent()) throw new IllegalArgumentException("Cannot copy an empty node");
+        if (!node.isPresent()) throw new IllegalArgumentException("Cannot copy an empty node.");
         Node<T> originalNode = node.get();
 
         this.key = originalNode.key;
@@ -23,14 +23,14 @@ public class Node<T extends Comparable<? super T>> implements Cloneable {
     }
 
     public T getKey() {
-        if (null == key) throw new IllegalStateException("Key is undefiened.");
+        if (null == key) throw new IllegalStateException("Key is undefined.");
         return key;
     }
     protected void setKey(T newKey) { this.key = newKey; }
 
     public byte getBalance() { return balance; }
     protected void rightSubTreeGrown() { 
-        assert balance == 0 || balance == -1 : "Increaseing balance is only valid if the current balance is 0 or -1.";
+        assert balance == 0 || balance == -1 : "Increasing balance is only valid if the current balance is 0 or -1.";
         this.balance++; 
     }
     protected void leftSubTreeGrown() { 
@@ -38,7 +38,7 @@ public class Node<T extends Comparable<? super T>> implements Cloneable {
         this.balance--; 
     }
     protected void setBalance(byte balance) {
-        assert balance == -1 || balance == 0 || balance == 1 : "Increaseing balance is only valid if the current balance is 0 or -1.";
+        assert balance == -1 || balance == 0 || balance == 1 : "Increasing balance is only valid if the current balance is 0 or -1.";
         this.balance = balance;
     }
 

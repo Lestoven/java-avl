@@ -14,12 +14,19 @@ public class Main {
         avlTree.insert(12);
         avlTree.insert(13);
 
-        System.out.println(avlTree.getRoot());
-        System.out.println(avlTree.getRoot().get().getLeft());
+        System.out.println(avlTree);
 
-        System.out.println(avlTree.getRoot().get().getRight());
-
-        System.out.println(avlTree.getRoot().get().getRight().get().getLeft());
-        System.out.println(avlTree.getRoot().get().getRight().get().getRight());
+        AvlTree<Integer> smallAvlTree = new AvlTree<>(500);
+        System.out.println(smallAvlTree);
+        smallAvlTree.insert(404);
+        System.out.println(smallAvlTree);
+        smallAvlTree.insert(300);
+        System.out.println(smallAvlTree);
+        smallAvlTree.insert(12000);
+        System.out.println(smallAvlTree);
+        smallAvlTree.insert(433);
+        System.out.println(smallAvlTree);
+        smallAvlTree.insert(503);
+        System.out.println(smallAvlTree);
     }
 }

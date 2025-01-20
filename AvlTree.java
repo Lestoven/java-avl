@@ -134,14 +134,14 @@ public class AvlTree<T extends Comparable<? super T>>  {
     }
 
     //public Node getRoot() { return new Node(root); }
-    public boolean isEmptyTree() { return root.isEmpty(); }
+    public boolean isEmptyTree() { return !root.isPresent(); }
     public Optional<Node<T>> getRoot() { return root; }
 
     public int getHeight() {
         int height = -1;
 
         Optional<Node<T>> node = root;
-        while(!node.isEmpty()) {
+        while(node.isPresent()) {
             if (node.get().getBalance() == 1) {
                 node = node.get().getRight();
             } else {
@@ -150,5 +150,27 @@ public class AvlTree<T extends Comparable<? super T>>  {
         }
 
         return height;
+    }
+
+    private void printTree(Node<T> node, StringBuilder sb) {
+        if (node.getLeft().isPresent()) {
+            sb.append("(");
+            printTree(node.getLeft().get(), sb);
+            sb.append(")");
+        }
+        sb.append(node.getLeft().isPresent() || node.getRight().isPresent() ? " " + node.getKey().toString() + " " : node.getKey().toString());
+        if (node.getRight().isPresent()) {
+            sb.append("(");
+            printTree(node.getRight().get(), sb);
+            sb.append(")");
+        }
+    }
+
+    @Override
+    public String toString() {
+        if(!root.isPresent()) return "()";
+        StringBuilder sb = new StringBuilder();
+        printTree(root.get(), sb);
+        return sb.toString();
     }
 }
