@@ -133,6 +133,65 @@ public class AvlTree<T extends Comparable<? super T>>  {
         return left;
     }
 
+
+    private record Result<T extends Comparable<? super T>>(Optional<Node<T>> node, Node<T> min) {};
+
+    public Optional<Node<T>> avlRemMin() {
+        if (!root.isPresent()) {
+            return root;
+        }
+
+        Result<T> res = avlRemMin(root.get(), new BooleanWrapper(false));
+        root = res.node();
+        return Optional.of(res.min());
+    }
+
+    private Result<T> avlRemMin(Node<T> node, BooleanWrapper heightShrunk) {
+        if (!node.getLeft().isPresent()) {
+            heightShrunk.setValue(true);
+            return new Result<T>(node.getRight(), node);
+        } else {
+            Result<T> res = avlRemMin(node.getLeft().get(), heightShrunk);
+            node.setLeft(res.node());
+
+            node = leftSubThreeShrunk(node, heightShrunk);
+            return new Result<T>(Optional.of(node), res.min());
+        }
+    }
+
+    private Node<T> leftSubThreeShrunk(Node<T> node, BooleanWrapper heightShrunk) {
+        if(1 == node.getBalance()) {
+            node = balancePP(node, heightShrunk);
+        } else {
+            node.rightSubTreeGrown();
+            heightShrunk.setValue(0 == node.getBalance());
+        }
+        return node;
+    }
+
+    private Node<T> balancePP(Node<T> node, BooleanWrapper heightShrunk) {
+        assert node.getRight().isPresent() : "Right sub tree of node cannot be empty!";
+        Node<T> right = node.getRight().get();
+
+        if (-1 == right.getBalance()) {
+            node = balancePPm(node, right);
+        } else if(0 == right.getBalance()) {
+            node = balancePP0(node, right);
+            heightShrunk.setValue(false);
+        } else { // right->balance == 1
+            node = balancePPp(node, right);
+        }
+        return node;
+    }
+
+    private Node<T> balancePP0(Node<T> node, Node<T> right) {
+        node.setRight(right.getLeft());
+        right.setLeft(Optional.of(node));
+        node.setBalance((byte)1);
+        right.setBalance((byte)-1);
+        return right;
+    }
+
     //public Node getRoot() { return new Node(root); }
     public boolean isEmptyTree() { return !root.isPresent(); }
     public Optional<Node<T>> getRoot() { return root; }
@@ -141,7 +200,7 @@ public class AvlTree<T extends Comparable<? super T>>  {
         int height = -1;
 
         Optional<Node<T>> node = root;
-        while(node.isPresent()) {
+        while (node.isPresent()) {
             if (node.get().getBalance() == 1) {
                 node = node.get().getRight();
             } else {
@@ -168,7 +227,7 @@ public class AvlTree<T extends Comparable<? super T>>  {
 
     @Override
     public String toString() {
-        if(!root.isPresent()) return "()";
+        if (!root.isPresent()) return "()";
         StringBuilder sb = new StringBuilder();
         printTree(root.get(), sb);
         return sb.toString();
