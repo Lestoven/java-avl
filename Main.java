@@ -29,21 +29,24 @@ public class Main {
         smallAvlTree.insert(503);
         System.out.println(smallAvlTree);*/
 
-        AvlTree<Integer> avlTree = new AvlTree<>(100);
-        avlTree.insert(130);
-        avlTree.insert(70);
-        avlTree.insert(150);
-        avlTree.insert(140);
-        avlTree.insert(80);
-        avlTree.insert(65);
-        avlTree.insert(90);
-        avlTree.insert(200);
-        avlTree.insert(135);
-        avlTree.insert(240);
-        avlTree.insert(500);
+        AvlTree<Integer> avlTree = new AvlTree<>(30);
+        avlTree.insert(7);
+        avlTree.insert(40);
+        avlTree.insert(32);
+        avlTree.insert(50);
+        avlTree.insert(4);
+        avlTree.insert(18);
+        avlTree.insert(20);
+        avlTree.insert(35);
+        avlTree.insert(42);
+        avlTree.insert(60);
+        avlTree.insert(55);
 
         System.out.println(avlTree);
-        System.out.println(avlTree.avlRemMin());
+        System.out.println(avlTree.remMin());
+        System.out.println(avlTree);
+
+        avlTree.delete(40);
         System.out.println(avlTree);
     }
 }

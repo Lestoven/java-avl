@@ -136,22 +136,22 @@ public class AvlTree<T extends Comparable<? super T>>  {
 
     private record Result<T extends Comparable<? super T>>(Optional<Node<T>> node, Node<T> min) {};
 
-    public Optional<Node<T>> avlRemMin() {
+    public Optional<Node<T>> remMin() {
         if (!root.isPresent()) {
             return root;
         }
 
-        Result<T> res = avlRemMin(root.get(), new BooleanWrapper(false));
+        Result<T> res = remMin(root.get(), new BooleanWrapper(false));
         root = res.node();
         return Optional.of(res.min());
     }
 
-    private Result<T> avlRemMin(Node<T> node, BooleanWrapper heightShrunk) {
+    private Result<T> remMin(Node<T> node, BooleanWrapper heightShrunk) {
         if (!node.getLeft().isPresent()) {
             heightShrunk.setValue(true);
             return new Result<T>(node.getRight(), node);
         } else {
-            Result<T> res = avlRemMin(node.getLeft().get(), heightShrunk);
+            Result<T> res = remMin(node.getLeft().get(), heightShrunk);
             node.setLeft(res.node());
 
             node = leftSubThreeShrunk(node, heightShrunk);
@@ -164,6 +164,16 @@ public class AvlTree<T extends Comparable<? super T>>  {
             node = balancePP(node, heightShrunk);
         } else {
             node.rightSubTreeGrown();
+            heightShrunk.setValue(0 == node.getBalance());
+        }
+        return node;
+    }
+
+    private Node<T> rightSubThreeShrunk(Node<T> node, BooleanWrapper heightShrunk) {
+        if(-1 == node.getBalance()) {
+            node = balanceMM(node, heightShrunk);
+        } else {
+            node.leftSubTreeGrown();
             heightShrunk.setValue(0 == node.getBalance());
         }
         return node;
@@ -184,12 +194,98 @@ public class AvlTree<T extends Comparable<? super T>>  {
         return node;
     }
 
+    private Node<T> balanceMM(Node<T> node, BooleanWrapper heightShrunk) {
+        assert node.getLeft().isPresent() : "Left sub tree of node cannot be empty!";
+        Node<T> left = node.getLeft().get();
+
+        if (-1 == left.getBalance()) {
+            node = balanceMMm(node, left);
+        } else if(0 == left.getBalance()) {
+            node = balanceMM0(node, left);
+            heightShrunk.setValue(false);
+        } else { // left->balance == 1
+            node = balanceMMp(node, left);
+        }
+        return node;
+    }
+
     private Node<T> balancePP0(Node<T> node, Node<T> right) {
         node.setRight(right.getLeft());
         right.setLeft(Optional.of(node));
         node.setBalance((byte)1);
         right.setBalance((byte)-1);
         return right;
+    }
+
+    private Node<T> balanceMM0(Node<T> node, Node<T> left) {
+        node.setLeft(left.getRight());
+        left.setRight(Optional.of(node));
+        node.setBalance((byte)-1);
+        left.setBalance((byte)1);
+        return left;
+    }
+
+
+    public void delete(T key) {
+        if (!root.isPresent()) {
+            return;
+        }
+
+        root = delete(root, key, new BooleanWrapper(false));
+    }
+
+    private Optional<Node<T>> delete(Optional<Node<T>> node, T key, BooleanWrapper heightShrunk) {
+        if(!node.isPresent()) {
+            heightShrunk.setValue(false);
+            return Optional.empty();
+        } else {
+            Node<T> currentNode = node.get();
+            if (0 == currentNode.getKey().compareTo(key)) {
+                return deleteRoot(currentNode, heightShrunk);
+            } else if (0 < currentNode.getKey().compareTo(key)) {
+                currentNode.setLeft(delete(currentNode.getLeft(), key, heightShrunk));
+
+                if(heightShrunk.getValue()) {
+                    node = Optional.of(leftSubThreeShrunk(currentNode, heightShrunk));
+                }
+            } else { // 0 > currentNode.getKey().compareTo(key)
+                currentNode.setRight(delete(currentNode.getRight(), key, heightShrunk));
+
+                if(heightShrunk.getValue()) {
+                    node = Optional.of(rightSubThreeShrunk(currentNode, heightShrunk));
+                }
+            }
+        }
+        return node;
+    }
+
+    private Optional<Node<T>> deleteRoot(Node<T> node, BooleanWrapper heightShrunk) {
+        if (!node.getLeft().isPresent()) {
+            heightShrunk.setValue(true);
+            return node.getRight();
+        } else if (!node.getRight().isPresent()) {
+            heightShrunk.setValue(true);
+            return node.getLeft();
+        } else {
+            node = rightSubTreeMinToRoot(node, heightShrunk);
+
+            if(heightShrunk.getValue()) {
+                return Optional.of(rightSubThreeShrunk(node, heightShrunk));
+            }
+            return Optional.of(node);
+        }
+    }
+
+    private Node<T> rightSubTreeMinToRoot(Node<T> node, BooleanWrapper heightShrunk) {
+        Result<T> res = remMin(node.getRight().get(), new BooleanWrapper(false));
+        node.setRight(res.node());
+        Node<T> min = res.min();
+
+        min.setLeft(node.getLeft());
+        min.setRight(node.getRight());
+        min.setBalance(node.getBalance());
+
+        return min;
     }
 
     //public Node getRoot() { return new Node(root); }
@@ -217,7 +313,7 @@ public class AvlTree<T extends Comparable<? super T>>  {
             printTree(node.getLeft().get(), sb);
             sb.append(")");
         }
-        sb.append(node.getLeft().isPresent() || node.getRight().isPresent() ? " " + node.getKey().toString() + " " : node.getKey().toString());
+        sb.append((node.getLeft().isPresent() ? " " : "") + node.getKey().toString() + (node.getRight().isPresent() ? " " : ""));
         if (node.getRight().isPresent()) {
             sb.append("(");
             printTree(node.getRight().get(), sb);
