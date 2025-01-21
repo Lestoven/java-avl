@@ -227,10 +227,6 @@ public class AvlTree<T extends Comparable<? super T>>  {
 
 
     public void delete(T key) {
-        if (!root.isPresent()) {
-            return;
-        }
-
         root = delete(root, key, new BooleanWrapper(false));
     }
 
@@ -302,6 +298,7 @@ public class AvlTree<T extends Comparable<? super T>>  {
             } else {
                 node = node.get().getLeft();
             }
+            height++;
         }
 
         return height;
